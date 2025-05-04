@@ -8,15 +8,29 @@ protocol DependencySource: Sendable {
     var tokenService: any TokenService { get }
 }
 
-struct RequestDependencySource: DependencySource {
+final class RequestDependencySource: @unchecked Sendable {
     private let request: Request
     init(request: Request) { self.request = request }
     
-    var localizationService: any LocalizationService { AppLocalizationService(request: request) }
-    var emailService: any EmailService { request.application.emailServiceType.instance(with: request) }
-    var keyService: any KeyService { request.application.keyService }
-    var config: any EnvironmentConfiguration { request.application.environmentConfiguration }
-    var tokenService: any TokenService { AppTokenService(request: request) }
+    private var app: Application { request.application }
+    
+    private lazy var _localizationService: any LocalizationService = {
+        app.localizationServiceType.instance(with: request)
+    }()
+    private lazy var _emailService: any EmailService = {
+        app.emailServiceType.instance(with: request)
+    }()
+    private lazy var _tokenService: any TokenService = {
+        app.tokenServiceType.instance(with: request)
+    }()
+}
+
+extension RequestDependencySource: DependencySource {
+    var localizationService: any LocalizationService { _localizationService }
+    var emailService: any EmailService { _emailService }
+    var keyService: any KeyService { app.keyService }
+    var config: any EnvironmentConfiguration { app.environmentConfiguration }
+    var tokenService: any TokenService { _tokenService }
 }
 
 extension Request {

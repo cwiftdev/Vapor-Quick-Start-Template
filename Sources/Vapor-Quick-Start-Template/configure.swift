@@ -30,6 +30,7 @@ public func configure(_ app: Application) async throws {
         try app.queues.use(
             .redis(url: environmentConfig.redisUrl)
         )
+        app.queues.add(SendEmailJob())
     }
     
     app.migrations.add(CreateUserEntity())
@@ -38,5 +39,6 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(CreateUserResetPasswordTokenEntity())
     
     try await app.autoMigrate()
+    try app.queues.startInProcessJobs()
     try routes(app)
 }

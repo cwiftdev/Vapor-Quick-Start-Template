@@ -1,4 +1,4 @@
-import Foundation
+import Vapor
 
 // MARK: - Localizable
 protocol Localizable: Sendable {
@@ -11,7 +11,7 @@ extension String: Localizable {
 }
 
 // MARK: - LocalizationService
-protocol LocalizationService {
+protocol LocalizationService: RequestInstanceService {
     /// Returns the localized string for a given localizable key, locale, and optional interpolations.
     /// - Parameters:
     ///   - localizable: The key or object representing the string to be localized.
@@ -52,7 +52,26 @@ extension PartialLocalizable {
 }
 
 extension LocalizationService {
-    func localize(localizable: any Localizable, locale: String? = nil, interpolations: [String: Any]? = nil) -> String {
+    func localize(
+        localizable: any Localizable,
+        locale: String? = nil,
+        interpolations: [String: Any]? = nil
+    ) -> String {
         return localize(localizable: localizable, locale: locale, interpolations: interpolations)
+    }
+}
+
+extension Application {
+    private enum LocalizationServiceStorageKey: StorageKey {
+        typealias Value = any LocalizationService.Type
+    }
+    
+    var localizationServiceType: any LocalizationService.Type {
+        get {
+            storage[LocalizationServiceStorageKey.self, default: AppLocalizationService.self]
+        }
+        set {
+            storage[LocalizationServiceStorageKey.self] = newValue
+        }
     }
 }
