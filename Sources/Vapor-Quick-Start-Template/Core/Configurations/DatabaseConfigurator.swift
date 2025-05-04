@@ -10,7 +10,12 @@ extension Application {
         typealias Value = any DatabaseConfigurator.Type
     }
     var databaseConfigurator: any DatabaseConfigurator.Type {
-        storage[DatabaseConfiguratorKey.self, default: AppDatabaseConfigurator.self]
+        get {
+            storage[DatabaseConfiguratorKey.self, default: AppDatabaseConfigurator.self]
+        }
+        set {
+            storage[DatabaseConfiguratorKey.self] = newValue
+        }
     }
     
     func configureDatabase() throws {

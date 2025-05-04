@@ -1,6 +1,8 @@
 import Vapor
 
 protocol KeyService: Sendable {
+    /// Generates a new unique key as a string.
+    /// - Returns: A unique string, typically used for random token generation or unique identifiers.
     func generateUniqueKey() -> String
 }
 
