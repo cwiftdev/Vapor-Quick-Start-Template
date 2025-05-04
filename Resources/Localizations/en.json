@@ -1,9 +1,21 @@
-"error.auth.passwords_dont_match": "Passwords do not match.",
-"error.auth.email_already_exist": "An account may already be associated with this email. Try signing in or resetting your password.",
-"error.auth.email_is_not_verified": "This email address has not been verified.",
-"error.auth.invalid_password": "Incorrect email or password.",
-"error.auth.user_not_found": "No user found with the provided info.",
-"error.auth.token_expired": "This link has expired. Please initiate the process again.",
-"error.auth.security_token_not_found": "Invalid or expired link. Please try again.",
-"error.auth.email_is_already_verified": "This email address is already verified."
+{
+    "error.auth.passwords_dont_match": "Passwords do not match.",
+    "error.auth.email_already_exist": "An account may already be associated with this email. Try signing in or resetting your password.",
+    "error.auth.email_is_not_verified": "This email address has not been verified.",
+    "error.auth.invalid_password": "Incorrect email or password.",
+    "error.auth.user_not_found": "No user found with the provided info.",
+    "error.auth.token_expired": "This link has expired. Please initiate the process again.",
+    "error.auth.security_token_not_found": "Invalid or expired link. Please try again.",
+    "error.auth.email_is_already_verified": "This email address is already verified."
 
+    "email.verify_email.subject": "Verify Your Email Address",
+    "email.verify_email.body.click_to_verify_button_info": "Click the button below to verify your email address.",
+    "email.verify_email.body.click_to_verify_button": "Verify",
+    "email.verify_email.body.click_to_verify_button_doesnt_work_info": "If the button doesn't work, please copy and paste the URL below into your web browser.",
+
+    
+    "email.reset_password.subject": "Reset Your Password",
+    "email.reset_password.body.click_to_reset_password_button_info": "To reset your password, please click the button below.",
+    "email.reset_password.body.reset_button_text": "Reset My Password",
+    "email.reset_password.body.button_doesnt_work_info": "If you're having trouble clicking the 'Reset My Password' button, copy and paste the URL below into your web browser:",
+}
