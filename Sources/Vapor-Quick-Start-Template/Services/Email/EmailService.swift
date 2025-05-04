@@ -19,7 +19,7 @@ protocol EmailTemplate {
 }
 
 /// A service responsible for sending emails using predefined templates.
-protocol EmailService: Sendable {
+protocol EmailService: RequestInstanceService {
     /// Sends an email based on the provided template.
     /// - Parameter template: The email template containing subject, content, and recipients.
     /// - Throws: An error if the email fails to send.
