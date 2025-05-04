@@ -31,5 +31,12 @@ public func configure(_ app: Application) async throws {
             .redis(url: environmentConfig.redisUrl)
         )
     }
+    
+    app.migrations.add(CreateUserEntity())
+    app.migrations.add(CreateUserEmailVerificationTokenEntity())
+    app.migrations.add(CreateUserRefreshTokenEntity())
+    app.migrations.add(CreateUserResetPasswordTokenEntity())
+    
+    try await app.autoMigrate()
     try routes(app)
 }
