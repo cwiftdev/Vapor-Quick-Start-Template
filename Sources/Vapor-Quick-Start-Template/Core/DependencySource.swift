@@ -6,6 +6,7 @@ protocol DependencySource: Sendable {
     var keyService: any KeyService { get }
     var config: any EnvironmentConfiguration { get }
     var tokenService: any TokenService { get }
+    var repositories: any RepositoryService { get }
 }
 
 final class RequestDependencySource: @unchecked Sendable {
@@ -23,6 +24,9 @@ final class RequestDependencySource: @unchecked Sendable {
     private lazy var _tokenService: any TokenService = {
         app.tokenServiceType.instance(with: request)
     }()
+    private lazy var _repositories: any RepositoryService = {
+        AppRepositoryService(db: request.db)
+    }()
 }
 
 extension RequestDependencySource: DependencySource {
@@ -31,6 +35,7 @@ extension RequestDependencySource: DependencySource {
     var keyService: any KeyService { app.keyService }
     var config: any EnvironmentConfiguration { app.environmentConfiguration }
     var tokenService: any TokenService { _tokenService }
+    var repositories: any RepositoryService { _repositories }
 }
 
 extension Request {
