@@ -2,6 +2,7 @@ import Fluent
 import Vapor
 
 final class UserEntity: Model,
+                        AppMailUser,
                         @unchecked Sendable {
     static let schema = "users"
     
