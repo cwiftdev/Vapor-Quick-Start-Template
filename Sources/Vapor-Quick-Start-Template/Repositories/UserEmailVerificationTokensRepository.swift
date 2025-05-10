@@ -5,7 +5,7 @@ protocol UserEmailVerificationTokensRepository: DatabaseRepository {
     func find(token: String) async throws -> UserEmailVerificationTokenEntity?
     func create(_ emailToken: UserEmailVerificationTokenEntity) async throws
     func delete(_ emailToken: UserEmailVerificationTokenEntity) async throws
-    func find(userID: UserEntity.IDValue) async throws -> UserEmailVerificationTokenEntity?
+    func delete(_ userId: UserEntity.IDValue) async throws
 }
 
 struct UserEmailVerificationTokensRepositoryImpl: UserEmailVerificationTokensRepository {
@@ -26,7 +26,9 @@ struct UserEmailVerificationTokensRepositoryImpl: UserEmailVerificationTokensRep
         try await emailToken.delete(on: database)
     }
     
-    func find(userID: UserEntity.IDValue) async throws -> UserEmailVerificationTokenEntity? {
-        return try await UserEmailVerificationTokenEntity.find(userID, on: database)
+    func delete(_ userId: UserEntity.IDValue) async throws {
+        try await UserEmailVerificationTokenEntity.query(on: database)
+            .filter(\.$user.$id == userId)
+            .delete()
     }
 }

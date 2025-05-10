@@ -7,15 +7,12 @@ struct AuthenticationController: BaseRouteCollection {
         routes.group("authentication") { account in
             account.post("register", use: register)
             account.post("login", use: login)
-            account.post("recover", use: recover)
-            
-            account.group(UserAuthenticator()) { account in
-                account.post("token", use: refreshAccessToken)
-            }
+            account.post("token", use: refreshAccessToken)
             
             account.group("reset-password") { resetPasswordRoutes in
-                resetPasswordRoutes.post("", use: resetPassword)
+                resetPasswordRoutes.post("send", use: sendResetPasswordMail)
                 resetPasswordRoutes.get("verify", use: verifyResetPasswordToken)
+                resetPasswordRoutes.put("reset", use: resetPassword)
             }
 
             account.group("email-verification") { emailVerificationRoutes in
@@ -52,9 +49,9 @@ private extension AuthenticationController {
     }
     
     @Sendable
-    func resetPassword(request: Request) async throws -> BaseResponse<EmptyResponse> {
-        try await useCase(on: request).resetPassword(
-            request: request.content.decode(ResetPasswordRequestDTO.self)
+    func sendResetPasswordMail(request: Request) async throws -> BaseResponse<EmptyResponse> {
+        try await useCase(on: request).sendResetPasswordMail(
+            request: request.content.decode(SendResetPasswordMailRequestDTO.self)
         )
         return .success()
     }
@@ -68,9 +65,9 @@ private extension AuthenticationController {
     }
     
     @Sendable
-    func recover(request: Request) async throws -> BaseResponse<EmptyResponse> {
-        try await useCase(on: request).recover(
-            request: request.content.decode(RecoverAccountRequestDTO.self)
+    func resetPassword(request: Request) async throws -> BaseResponse<EmptyResponse> {
+        try await useCase(on: request).resetPassword(
+            request: request.content.decode(ResetPasswordRequestDTO.self)
         )
         return .success()
     }
