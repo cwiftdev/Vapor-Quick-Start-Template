@@ -33,11 +33,12 @@ let package = Package(
             swiftSettings: swiftSettings
         ),
         .testTarget(
-            name: "Vapor-Quick-Start-TemplateTests",
+            name: "UnitTests",
             dependencies: [
                 .target(name: "Vapor-Quick-Start-Template"),
                 .product(name: "VaporTesting", package: "vapor"),
             ],
+            path: "Tests/UnitTests",
             swiftSettings: swiftSettings
         )
     ]
