@@ -1,7 +1,7 @@
 import Vapor
 
 protocol BaseRouteCollection: RouteCollection {
-    associatedtype UseCaseType: UseCase
+    associatedtype UseCaseType: BaseUseCase
     func useCase(on request: Request) -> UseCaseType
 }
 

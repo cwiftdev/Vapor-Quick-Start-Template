@@ -1,6 +1,6 @@
 import Vapor
 
-struct AuthenticationUseCase: UseCase {
+struct AuthenticationUseCase: BaseUseCase {
     private let dSource: any DependencySource
     
     init(dSource: any DependencySource) {
@@ -85,7 +85,7 @@ struct AuthenticationUseCase: UseCase {
         return tokenPair
     }
     
-    func resetPassword(request: ResetPasswordRequestDTO) async throws {
+    func sendResetPasswordMail(request: SendResetPasswordMailRequestDTO) async throws {
         try request.validate()
         
         guard let relatedUserEntity = try await dSource.repositories.users.find(request.email) else {
@@ -110,7 +110,7 @@ struct AuthenticationUseCase: UseCase {
     
     func verifyResetPasswordToken(token: String) async throws {
         let repository = dSource.repositories.resetPasswordTokens
-        let passwordTokenEntity = try await repository.find(token: token)
+        let passwordTokenEntity = try await repository.find(token: token.hash)
         guard let passwordTokenEntity else { throw AuthenticationError.userNotFound }
         
         guard passwordTokenEntity.expiresAt > Date() else {
@@ -119,7 +119,7 @@ struct AuthenticationUseCase: UseCase {
         }
     }
     
-    func recover(request: RecoverAccountRequestDTO) async throws {
+    func resetPassword(request: ResetPasswordRequestDTO) async throws {
         try request.validate()
         
         guard request.password == request.confirmPassword else {
@@ -148,13 +148,20 @@ struct AuthenticationUseCase: UseCase {
         
         let user = try await dSource.repositories.users.find(request.email)
         guard let user else { throw AuthenticationError.userNotFound }
+        let userId = try user.requireID()
         
         guard !user.isEmailVerified else {
             throw AuthenticationError.emailAlreadyVerified
         }
         
-        let clientUrl = dSource.config.clientUrl
         let verificationKey = dSource.keyService.generateUniqueKey()
+        let newEmailToken = UserEmailVerificationTokenEntity(
+            userID: userId,
+            token: verificationKey.hash
+        )
+        try await dSource.repositories.emailVerificationTokens.create(newEmailToken)
+        
+        let clientUrl = dSource.config.clientUrl
         let verificationUrl = "\(clientUrl)/verificationKey?=\(verificationKey)"
         
         let emailVerificationTemplate = VerifyEmailMailTemplate(
@@ -171,16 +178,17 @@ struct AuthenticationUseCase: UseCase {
         let emailTokenEntity = try await repository.find(token: token.hash)
         guard let emailTokenEntity else { throw AuthenticationError.userNotFound }
         
-        try await repository.delete(emailTokenEntity)
-        
         guard emailTokenEntity.expiresAt > Date() else {
+            try await repository.delete(emailTokenEntity)
             throw AuthenticationError.tokenExpired
         }
+        let userId = emailTokenEntity.$user.id
+        try await repository.delete(userId)
         
         try await dSource.repositories.users.set(
             \.$isEmailVerified,
              to: true,
-             for: emailTokenEntity.$user.id
+             for: userId
         )
     }
 }
@@ -189,8 +197,9 @@ private extension AuthenticationUseCase {
     func generateTokenPair(user: UserEntity) throws -> UserTokenPairResponseDTO {
         let accessToken = try dSource.tokenService.generateAccessToken(user: user)
         let refreshToken = dSource.keyService.generateUniqueKey()
-        
-        return UserTokenPairResponseDTO(accessToken: accessToken,
-                                        refreshToken: refreshToken)
+        return UserTokenPairResponseDTO(
+            accessToken: accessToken,
+            refreshToken: refreshToken
+        )
     }
 }

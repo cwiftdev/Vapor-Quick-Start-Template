@@ -1,9 +1,9 @@
 import Vapor
 
-protocol UseCase: Sendable {
+protocol BaseUseCase: Sendable {
     init(dSource: any DependencySource)
 }
 
-extension UseCase {
+extension BaseUseCase {
     static func instance(on dSource: any DependencySource) -> Self { .init(dSource: dSource) }
 }

@@ -1,9 +1,17 @@
 import NIOSSL
 import Vapor
 import QueuesRedisDriver
+import LingoVapor
 
 public func configure(_ app: Application) async throws {
     let environmentConfig = app.environmentConfiguration
+    
+    try app.jwt.signers.use(jwksJSON: environmentConfig.jwksString)
+    
+    app.lingoVapor.configuration = LingoConfiguration(
+        defaultLocale: Constants.Language.defaultLanguageKey,
+        localizationsDir: Constants.Directory.localizations.pathString
+    )
     
     let corsConfiguration = CORSMiddleware.Configuration(
         allowedOrigin: .all,
