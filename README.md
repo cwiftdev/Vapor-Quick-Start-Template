@@ -66,6 +66,13 @@ SMTP_MAIL=<SMTP Mail>
 SMTP_PASSWORD=<SMTP Password>
 REDIS_URL=<REDIS URL>
 ```
+
+> [!NOTE]
+> Use [custom working directory](https://docs.vapor.codes/getting-started/xcode/)
+
+> [!NOTE]
+> You can create your own jwks from [mkjwk](https://mkjwk.org/) and you can remove the spaces from [browserling](https://www.browserling.com/tools/remove-all-whitespace)
+
 ## API Endpoints and cURL Examples
 
 Below are the API endpoints and cURL examples for different authentication services. These examples can be used for both local testing and production.
